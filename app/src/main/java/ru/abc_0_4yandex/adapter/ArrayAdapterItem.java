@@ -14,44 +14,40 @@ import android.widget.TextView;
 // here's our beautiful adapter
 public class ArrayAdapterItem extends ArrayAdapter<ObjectItem> {
 
-    Context mContext;
     int layoutResourceId;
-    ObjectItem data[] = null;
-
     public ArrayAdapterItem(Context mContext, int layoutResourceId, ObjectItem[] data) {
 
         super(mContext, layoutResourceId, data);
-
         this.layoutResourceId = layoutResourceId;
-        this.mContext = mContext;
-        this.data = data;
+
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        /*
-         * The convertView argument is essentially a "ScrapView" as described is Lucas post
-         * http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
-         * It will have a non-null value when ListView is asking you recycle the row layout.
-         * So, when convertView is not null, you should simply update its contents instead of inflating a new row layout.
-         */
+        ViewHolder holder = null;
         if(convertView==null){
             // inflate the layout
-            LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+            LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
             convertView = inflater.inflate(layoutResourceId, parent, false);
+            holder = new ViewHolder();
+            holder.mTextView = (TextView)convertView.findViewById(R.id.textViewItem);
+            convertView.setTag(holder);
         }
+        else {
+            holder = (ViewHolder)convertView.getTag();
 
-        // object item based on the position
-        ObjectItem objectItem = data[position];
+        }
+        holder.mTextView.setText(getItem(position).itemName);
 
-        // get the TextView and then set the text (item name) and tag (item ID) values
-        TextView textViewItem = (TextView) convertView.findViewById(R.id.textViewItem);
-        textViewItem.setText(objectItem.itemName);
-        textViewItem.setTag(objectItem.itemId);
 
         return convertView;
 
+    }
+
+
+    public static class ViewHolder {
+        public TextView mTextView;
     }
 
 }
